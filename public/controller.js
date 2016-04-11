@@ -3,28 +3,29 @@ var app = angular.module('SampleApp', []);
 app.controller('AppCtrl', ['$scope', '$http', function ($scope, $http) {
 	console.log("From Controller");
 
-	person1 = {
-		name: 'Test1', 
-		email: 'test@test.com',
-		num: '011111111'
+	var refresh = function () {
+		$http.get('/contactlist').success(function (response) {
+			console.log("I got the data requested");
+			$scope.contactlist = response;
+			$scope.contact = '';
+		});
 	};
 
-	person2 = {
-		name: 'Test2',
-		email: 'test2@test.com',
-		num: '011111112'
-	};
+	refresh();
 
-	person3 = {
-		name: 'Test3',
-		email: 'test3@test.com',
-		num: '011111112'
+	$scope.addContact = function () {
+		console.log($scope.contact);
+		$http.post('/contactlist', $scope.contact).success(function (response) {
+			console.log(response);
+			refresh();	
+		});
 	};
-
-	var contactlist = [person1, person2, person3];
 	
-	$scope.contactlist = contactlist;
-	
-	console.log(contactlist);
+	$scope.remove = function(id){
+		console.log(id);
+		$http.delete('/contactlist/'+id).success(function(response){
+			refresh();
+		});
+	}
 
 }]);
